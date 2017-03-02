@@ -24,7 +24,7 @@ Y_test = dataset_train[1:10001,32].astype(float)
 X_train = dataset_train[10001:200001,:31].astype(float)
 Y_train = dataset_train[10001:200001,32].astype(float)
 
-W = dataset_train[1:10000,31].astype(float)
+W = dataset_train[1:10001,31].astype(float)
 
 
 reg = tree.DecisionTreeRegressor ()
