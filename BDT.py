@@ -161,3 +161,30 @@ print score_G
 print 'AMS_G =',AMS_G
 #82.33
 #AMS_G = 0.51961354779
+
+
+T=gradient.predict_proba(X_test)[:,0]
+print (T)
+print (T.shape)
+print (Y_test[1])
+temp = T.argsort()
+ranks = numpy.empty(len(T), int)
+ranks[temp] = numpy.arange(len(T)) +1
+
+S=[]
+for i in range(len(T)):
+    if T[i]>0.5:
+        S.append('s')
+    else:
+        S.append('b')
+x=1
+res = [["EventId","RankOrder","Class"]]
+for i in range(len(G)):
+    res.append([int(X_test[i,0]),ranks[i],S[i]])
+    
+print len(res)       
+import csv
+c= csv.writer(open("result.csv","wb"))
+
+for i in res:
+    c.writerow(i)
