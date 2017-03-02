@@ -162,7 +162,7 @@ print 'AMS_G =',AMS_G
 #82.33
 #AMS_G = 0.51961354779
 
-
+#En prenant comme ensemble de test le dataset_test, afin de comparer les résultats à ceux sur Kaggle
 T=gradient.predict_proba(X_test)[:,0]
 print (T)
 print (T.shape)
@@ -188,3 +188,4 @@ c= csv.writer(open("result.csv","wb"))
 
 for i in res:
     c.writerow(i)
+#Score AMS donné par Kaggle : 0.39744
