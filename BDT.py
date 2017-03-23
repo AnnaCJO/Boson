@@ -87,11 +87,26 @@ AMS(gradient,X_test,Y_test)
 #82.33
 #AMS = 0.51961354779
 
+#Avec un gridsearch sur le n_estimators et max_depth
+W = dataset_train[10001:200001,31].astype(float)
+parameters = {'n_estimators':[50,100,250,500], 'max_depth':[2,3,5,8,10]}
+
+gradient = GradientBoostingClassifier()
+
+best_grad = grid_search.GridSearchCV(gradient, parameters, scoring=AMS)
+best_grad.fit(X_train, Y_train)
+print("Best: %f using %s" % (best_grad.best_score_, best_grad.best_params_))
+for params, mean_score, scores in best_grad.grid_scores_:
+    print("%f (%f) with: %r" % (scores.mean(), scores.std(), params))
+
+#Résultat : Best: 143.273124 using {'n_estimators': 50, 'max_depth': 3}
+
 #En prenant comme ensemble de test le dataset_test, afin de comparer les résultats à ceux sur Kaggle
+X_test = dataset_test[:,:31].astype(float)
+
 T=gradient.predict_proba(X_test)[:,0]
 print (T)
 print (T.shape)
-print (Y_test[1])
 temp = T.argsort()
 ranks = numpy.empty(len(T), int)
 ranks[temp] = numpy.arange(len(T)) +1
@@ -113,4 +128,4 @@ c= csv.writer(open("result.csv","wb"))
 
 for i in res:
     c.writerow(i)
-#Score AMS donné par Kaggle : 0.39744
+#Score AMS donné par Kaggle avant le gridsearch: 0.39744
