@@ -104,7 +104,10 @@ for params, mean_score, scores in best_grad.grid_scores_:
 #En prenant comme ensemble de test le dataset_test, afin de comparer les résultats à ceux sur Kaggle
 X_test = dataset_test[:,:31].astype(float)
 
-T=gradient.predict_proba(X_test)[:,0]
+print(gradient.predict_proba(X_train)[1,:])
+print(Y_train[1])
+
+T=gradient.predict_proba(X_test)[:,1]
 print (T)
 print (T.shape)
 temp = T.argsort()
