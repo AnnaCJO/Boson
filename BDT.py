@@ -131,4 +131,4 @@ c= csv.writer(open("result.csv","wb"))
 
 for i in res:
     c.writerow(i)
-#Score AMS donné par Kaggle avant le gridsearch: 0.39744
+#Score AMS donné par Kaggle : 2.64820
