@@ -1,4 +1,5 @@
 from sklearn import tree
+from sklearn import grid_search
 
 import pandas
 import numpy
