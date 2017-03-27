@@ -133,3 +133,9 @@ c= csv.writer(open("result.csv","wb"))
 for i in res:
     c.writerow(i)
 #Score AMS donné par Kaggle : 2.64820
+
+#Résultat pour la Random Forest : Best: 146.466420 using {'n_estimators': 100, 'max_depth': 10}
+#Score Kaggle : 2.82174
+
+#Résultat pour Adaboost Best: 131.665896 using {'n_estimators': 20}
+#Score Kaggle : 2.28066
