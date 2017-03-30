@@ -54,31 +54,12 @@ AMS(reg,X_test,Y_test)
 #71.07
 #AMS = 0.273223317766
 
-from sklearn.ensemble import AdaBoostRegressor
-
-ada = AdaBoostRegressor(base_estimator=reg,
-                         n_estimators=50, 
-                         learning_rate=0.1, random_state=0)
-ada = ada.fit(X_train, Y_train)
-AMS(ada,X_test,Y_test)
-#83 with 100 estimators
-#82 with 50 estimators, AMS = 0.505636131249
-#79 with 10 estimators
-
-                         
 clf = tree.DecisionTreeClassifier ()
 clf = clf.fit(X_train,Y_train)
 AMS(clf,X_test,Y_test)
 #70.65
 #AMS = 0.272780740678
 
-from sklearn.ensemble import RandomForestClassifier
-
-forest = RandomForestClassifier(n_estimators = 50,random_state=0)
-forest = forest.fit(X_train,Y_train)
-AMS(forest,X_test,Y_test)
-#83.2
-#AMS = 0.536340014348
 
 from sklearn.ensemble import GradientBoostingClassifier
 
@@ -99,6 +80,8 @@ best_grad.fit(X_train, Y_train)
 print("Best: %f using %s" % (best_grad.best_score_, best_grad.best_params_))
 for params, mean_score, scores in best_grad.grid_scores_:
     print("%f (%f) with: %r" % (scores.mean(), scores.std(), params))
+    
+gradient = best_grad.best_estimator_
 
 #Résultat : Best: 143.273124 using {'n_estimators': 50, 'max_depth': 3}
 
@@ -128,14 +111,120 @@ for i in range(len(G)):
     
 print len(res)       
 import csv
-c= csv.writer(open("result.csv","wb"))
+c= csv.writer(open("result_grad.csv","wb"))
 
 for i in res:
     c.writerow(i)
 #Score AMS donné par Kaggle : 2.64820
 
+
+from sklearn.ensemble import RandomForestClassifier
+
+X_test = dataset_train[1:10001,:31].astype(float)
+
+forest = RandomForestClassifier(n_estimators = 50,random_state=0)
+forest = forest.fit(X_train,Y_train)
+AMS(forest,X_test,Y_test)
+#83.2
+#AMS = 0.536340014348
+
+parameters = {'n_estimators':[3, 5, 10, 20, 50, 100], 'max_depth':[2,3,5,8,10]}
+
+forest = RandomForestClassifier()
+
+best_forest = grid_search.GridSearchCV(forest, parameters, scoring=AMS)
+best_forest.fit(X_train, Y_train)
+print("Best: %f using %s" % (best_forest.best_score_, best_forest.best_params_))
+for params, mean_score, scores in best_forest.grid_scores_:
+    print("%f (%f) with: %r" % (scores.mean(), scores.std(), params))
+    
+forest = best_forest.best_estimator_
 #Résultat pour la Random Forest : Best: 146.466420 using {'n_estimators': 100, 'max_depth': 10}
+
+X_test = dataset_test[:,:31].astype(float)
+
+print(forest.predict_proba(X_train)[1,:])
+print(Y_train[1])
+
+T=forest.predict_proba(X_test)[:,1]
+print (T)
+print (T.shape)
+temp = T.argsort()
+ranks = numpy.empty(len(T), int)
+ranks[temp] = numpy.arange(len(T)) +1
+
+S=[]
+for i in range(len(T)):
+    if T[i]>0.5:
+        S.append('s')
+    else:
+        S.append('b')
+x=1
+res = [["EventId","RankOrder","Class"]]
+for i in range(len(G)):
+    res.append([int(X_test[i,0]),ranks[i],S[i]])
+    
+print len(res)       
+import csv
+c= csv.writer(open("result_forest.csv","wb"))
+
+for i in res:
+    c.writerow(i)
+
 #Score Kaggle : 2.82174
 
+from sklearn.ensemble import AdaBoostClassifier
+
+X_test = dataset_train[1:10001,:31].astype(float)
+
+ada = AdaBoostClassifier(base_estimator=reg,
+                         n_estimators=50, 
+                         learning_rate=0.1, random_state=0)
+ada = ada.fit(X_train, Y_train)
+AMS(ada,X_test,Y_test)
+#82 with 50 estimators, AMS = 0.505636131249
+
+parameters = {'n_estimators':[3, 5, 10, 20, 50, 100]}
+
+ada = AdaBoostClassifier()
+
+best_ada = grid_search.GridSearchCV(ada, parameters, scoring=AMS)
+best_ada.fit(X_train, Y_train)
+print("Best: %f using %s" % (best_ada.best_score_, best_ada.best_params_))
+for params, mean_score, scores in best_ada.grid_scores_:
+    print("%f (%f) with: %r" % (scores.mean(), scores.std(), params))
+    
+ada = best_ada.best_estimator_
 #Résultat pour Adaboost Best: 131.665896 using {'n_estimators': 20}
+
+X_test = dataset_test[:,:31].astype(float)
+
+print(ada.predict_proba(X_train)[1,:])
+print(Y_train[1])
+
+T=ada.predict_proba(X_test)[:,1]
+print (T)
+print (T.shape)
+temp = T.argsort()
+ranks = numpy.empty(len(T), int)
+ranks[temp] = numpy.arange(len(T)) +1
+
+S=[]
+for i in range(len(T)):
+    if T[i]>0.5:
+        S.append('s')
+    else:
+        S.append('b')
+x=1
+res = [["EventId","RankOrder","Class"]]
+for i in range(len(G)):
+    res.append([int(X_test[i,0]),ranks[i],S[i]])
+    
+print len(res)       
+import csv
+c= csv.writer(open("result_ada.csv","wb"))
+
+for i in res:
+    c.writerow(i)
+
 #Score Kaggle : 2.28066
